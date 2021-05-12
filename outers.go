@@ -14,6 +14,13 @@ const (
 	KeyDefaultKey = "default"
 )
 
+func extractOptKeys(keys []string) string {
+	if len(keys) > 0 {
+		return keys[0]
+	}
+	return ""
+}
+
 func Load(key, kind string, out interface{}) (err error) {
 	if key == "" {
 		key = KeyDefaultKey

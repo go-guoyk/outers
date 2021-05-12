@@ -101,13 +101,9 @@ func Redis(optKey ...string) (out *redis.Client, err error) {
 	return
 }
 
-func RedisOptions(optKey ...string) (out *redis.Options, err error) {
-	var key string
-	if len(optKey) > 0 {
-		key = optKey[0]
-	}
+func RedisOptions(optKeys ...string) (out *redis.Options, err error) {
 	var opts redisOptions
-	if err = Load(key, "redis", &opts); err != nil {
+	if err = Load(extractOptKeys(optKeys), "redis", &opts); err != nil {
 		return
 	}
 	out = opts.Unwrap()
@@ -123,13 +119,9 @@ func RedisCluster(optKey ...string) (out *redis.ClusterClient, err error) {
 	return
 }
 
-func RedisClusterOptions(optKey ...string) (out *redis.ClusterOptions, err error) {
-	var key string
-	if len(optKey) > 0 {
-		key = optKey[0]
-	}
+func RedisClusterOptions(optKeys ...string) (out *redis.ClusterOptions, err error) {
 	var opts redisClusterOptions
-	if err = Load(key, "redis", &opts); err != nil {
+	if err = Load(extractOptKeys(optKeys), "redis", &opts); err != nil {
 		return
 	}
 	out = opts.Unwrap()
