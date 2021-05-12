@@ -2,9 +2,14 @@ package outers
 
 import "github.com/go-redis/redis/v8"
 
-type redisOptions struct {
+type UnifiedRedisOptions struct {
 	Name               string   `yaml:"name"`
 	Network            string   `yaml:"network"`
+	Addresses          []string `yaml:"addresses"`
+	MaxRedirects       int      `yaml:"max_redirects"`
+	ReadOnly           bool     `yaml:"read_only"`
+	RouteByLatency     bool     `yaml:"route_by_latency"`
+	RouteRandomly      bool     `yaml:"route_randomly"`
 	Address            string   `yaml:"address"`
 	Database           int      `yaml:"database"`
 	Username           string   `yaml:"username"`
@@ -23,7 +28,7 @@ type redisOptions struct {
 	IdleCheckFrequency Duration `yaml:"idle_check_frequency"`
 }
 
-func (opts redisOptions) Unwrap() *redis.Options {
+func (opts UnifiedRedisOptions) UnwrapRedisOptions() *redis.Options {
 	return &redis.Options{
 		Network:            opts.Network,
 		Addr:               opts.Address,
@@ -45,30 +50,7 @@ func (opts redisOptions) Unwrap() *redis.Options {
 	}
 }
 
-type redisClusterOptions struct {
-	Name               string   `yaml:"name"`
-	Addresses          []string `yaml:"addresses"`
-	MaxRedirects       int      `yaml:"max_redirects"`
-	ReadOnly           bool     `yaml:"read_only"`
-	RouteByLatency     bool     `yaml:"route_by_latency"`
-	RouteRandomly      bool     `yaml:"route_randomly"`
-	Username           string   `yaml:"username"`
-	Password           string   `yaml:"password"`
-	MaxRetries         int      `yaml:"max_retries"`
-	MinRetryBackoff    Duration `yaml:"min_retry_backoff"`
-	MaxRetryBackoff    Duration `yaml:"max_retry_backoff"`
-	DialTimeout        Duration `yaml:"dial_timeout"`
-	ReadTimeout        Duration `yaml:"read_timeout"`
-	WriteTimeout       Duration `yaml:"write_timeout"`
-	PoolSize           int      `yaml:"pool_size"`
-	MinIdleConns       int      `yaml:"min_idle_conns"`
-	MaxConnAge         Duration `yaml:"max_conn_age"`
-	PoolTimeout        Duration `yaml:"pool_timeout"`
-	IdleTimeout        Duration `yaml:"idle_timeout"`
-	IdleCheckFrequency Duration `yaml:"idle_check_frequency"`
-}
-
-func (opts redisClusterOptions) Unwrap() *redis.ClusterOptions {
+func (opts UnifiedRedisOptions) UnwrapRedisClusterOptions() *redis.ClusterOptions {
 	return &redis.ClusterOptions{
 		Addrs:              opts.Addresses,
 		MaxRedirects:       opts.MaxRedirects,
@@ -102,11 +84,11 @@ func Redis(optKey ...string) (out *redis.Client, err error) {
 }
 
 func RedisOptions(optKeys ...string) (out *redis.Options, err error) {
-	var opts redisOptions
+	var opts UnifiedRedisOptions
 	if err = Load(extractOptKeys(optKeys), "redis", &opts); err != nil {
 		return
 	}
-	out = opts.Unwrap()
+	out = opts.UnwrapRedisOptions()
 	return
 }
 
@@ -120,10 +102,10 @@ func RedisCluster(optKey ...string) (out *redis.ClusterClient, err error) {
 }
 
 func RedisClusterOptions(optKeys ...string) (out *redis.ClusterOptions, err error) {
-	var opts redisClusterOptions
+	var opts UnifiedRedisOptions
 	if err = Load(extractOptKeys(optKeys), "redis", &opts); err != nil {
 		return
 	}
-	out = opts.Unwrap()
+	out = opts.UnwrapRedisClusterOptions()
 	return
 }
