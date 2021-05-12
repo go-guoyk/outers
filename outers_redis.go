@@ -5,11 +5,11 @@ import "github.com/go-redis/redis/v8"
 type UnifiedRedisOptions struct {
 	Name               string   `yaml:"name"`
 	Network            string   `yaml:"network"`
-	Addresses          []string `yaml:"addresses"`
-	MaxRedirects       int      `yaml:"max_redirects"`
-	ReadOnly           bool     `yaml:"read_only"`
-	RouteByLatency     bool     `yaml:"route_by_latency"`
-	RouteRandomly      bool     `yaml:"route_randomly"`
+	Addresses          []string `yaml:"addresses"`        // cluster only
+	MaxRedirects       int      `yaml:"max_redirects"`    // cluster only
+	ReadOnly           bool     `yaml:"read_only"`        // cluster only
+	RouteByLatency     bool     `yaml:"route_by_latency"` // cluster only
+	RouteRandomly      bool     `yaml:"route_randomly"`   // cluster only
 	Address            string   `yaml:"address"`
 	Database           int      `yaml:"database"`
 	Username           string   `yaml:"username"`
